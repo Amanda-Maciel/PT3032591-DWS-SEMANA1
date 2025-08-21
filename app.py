@@ -1,32 +1,47 @@
-from flask import Flask, redirect, url_for, jsonify, abort
+from flask import Flask, url_for, request
 
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return 'Hello World! Disciplina PTBDSWS'
+    return '''
+        <h1>Avaliação contínua: Aula 030</h1>
+        <ul>
+            <li><a href="{}">Home</a></li>
+            <li><a href="{}">Identificação</a></li>
+            <li><a href="{}">Contexto de Requisição</a></li>
+        </ul>
+    '''.format(
+        url_for('home'),
+        url_for('identificacao'),
+        url_for('contexto')
+    )
 
-@app.route('/user/Fabio Teixeira')
-def user():
-    return 'Hello, Fabio Teixeira!'
+@app.route('/identificacao')
+def identificacao():
+    return '''
+        <h1>Avaliação contínua: Aula 030</h1>
+        <p><strong>Aluno:</strong> Fabio Teixeira</p>
+        <p><strong>Prontuário:</strong> PT23820X</p>
+        <p><strong>Instituição:</strong> IFSP</p>
+        <p><a href="{}">Voltar ao início</a></p>
+    '''.format(url_for('home'))
 
 @app.route('/contextorequisicao')
 def contexto():
-    return 'Your browser is Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+    navegador = request.headers.get('User-Agent')
+    ip_remoto = request.remote_addr
+    host = request.host  # ou request.host_url para incluir http(s)
 
-@app.route('/codigostatusdiferente')
-def status_diferente():
-    return 'Bad Request'
-
-@app.route('/objetoresposta')
-def objeto_resposta():
-    return jsonify({'This document carries a cookie!'})
-
-@app.route('/redirecionamento')
-def redirecionamento():
-    return redirect(url_for('https://ptb.ifsp.edu.br/'))
-
-@app.route('/abortar')
-def rota_abortada():
-    abort(403)  
-
+    return '''
+        <h1>Avaliação contínua: Aula 030</h1>
+        <p><strong>Seu navegador é:</strong> {}</p>
+        <p><strong>O IP do computador remoto é:</strong> {}</p>
+        <p><strong>O host da aplicação é:</strong> {}</p>
+        <p><a href="{}">Voltar ao início</a></p>
+    '''.format(
+        navegador,
+        ip_remoto,
+        host,
+        url_for('home')
+    )
