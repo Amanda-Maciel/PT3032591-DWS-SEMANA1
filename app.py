@@ -21,8 +21,8 @@ def home():
 def identificacao():
     return '''
         <h1>Avaliação contínua: Aula 030</h1>
-        <p><strong>Aluno:</strong> Fabio Teixeira</p>
-        <p><strong>Prontuário:</strong> PT23820X</p>
+        <p><strong>Aluno:</strong> Amanda Maciel</p>
+        <p><strong>Prontuário:</strong> PT3032591</p>
         <p><strong>Instituição:</strong> IFSP</p>
         <p><a href="{}">Voltar ao início</a></p>
     '''.format(url_for('home'))
