@@ -3,17 +3,16 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# Template base HTML (com Bootstrap e Navbar simplificado)
 base_html = '''
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Avaliação Contínua</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
+    <link rel="stylesheet" 
+          href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">Flasky</a>
         <div class="collapse navbar-collapse">
@@ -22,11 +21,11 @@ base_html = '''
             </ul>
         </div>
     </nav>
-
-    <!-- Conteúdo -->
     <div class="container mt-4">
         {conteudo}
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 '''
@@ -61,7 +60,6 @@ def contexto():
     navegador = request.headers.get('User-Agent')
     ip_remoto = request.remote_addr
     host = request.host  
-
     conteudo = f'''
         <h1>Contexto da Requisição</h1>
         <p><strong>Seu navegador é:</strong> {navegador}</p>
