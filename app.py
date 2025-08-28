@@ -84,13 +84,11 @@ def user_amanda():
         conteudo=conteudo
     )
 
-# Rota /rotainexistente 
+@app.route('/rotainexistente')
 def rota_inexistente():
     conteudo = '<h1>Not Found</h1>'
     return base_html.format(
         home=url_for('home'),
         conteudo=conteudo
-    ), 404
+    )
 
-if __name__ == '__main__':
-    app.run(debug=True)
