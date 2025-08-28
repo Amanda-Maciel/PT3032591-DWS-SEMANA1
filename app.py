@@ -71,7 +71,7 @@ def contexto():
         conteudo=conteudo
     )
 
-# Nova rota /user/amandamaciel
+# Rota /user/amandamaciel
 @app.route('/user/amandamaciel')
 def user_amanda():
     agora = datetime.now().strftime("%B %d, %Y %I:%M %p")
@@ -84,10 +84,13 @@ def user_amanda():
         conteudo=conteudo
     )
 
-# Nova rota /rotainexistente retorna erro 404
-@app.route('/rotainexistente')
+# Rota /rotainexistente 
 def rota_inexistente():
-    return "Erro 404: Página não encontrada", 404
+    conteudo = '<h1>Not Found</h1>'
+    return base_html.format(
+        home=url_for('home'),
+        conteudo=conteudo
+    ), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
