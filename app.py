@@ -1,47 +1,77 @@
 from flask import Flask, url_for, request
+from datetime import datetime
 
 app = Flask(__name__)
 
+# Template base HTML (com Bootstrap e Navbar simplificado)
+base_html = '''
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Avaliação Contínua</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Flasky</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="{home}">Home</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Conteúdo -->
+    <div class="container mt-4">
+        {conteudo}
+    </div>
+</body>
+</html>
+'''
+
 @app.route('/')
 def home():
-    return '''
-        <h1>Avaliação contínua: Aula 030</h1>
-        <ul>
-            <li><a href="{}">Home</a></li>
-            <li><a href="{}">Identificação</a></li>
-            <li><a href="{}">Contexto de Requisição</a></li>
-        </ul>
-    '''.format(
-        url_for('home'),
-        url_for('identificacao'),
-        url_for('contexto')
+    agora = datetime.now().strftime("%B %d, %Y %I:%M %p")
+    conteudo = f'''
+        <h1>Hello World!</h1>
+        <p>The local date and time is {agora}.</p>
+    '''
+    return base_html.format(
+        home=url_for('home'),
+        conteudo=conteudo
     )
 
 @app.route('/identificacao')
 def identificacao():
-    return '''
-        <h1>Avaliação contínua: Aula 030</h1>
+    conteudo = '''
+        <h1>Identificação</h1>
         <p><strong>Aluno:</strong> Amanda Maciel</p>
         <p><strong>Prontuário:</strong> PT3032591</p>
         <p><strong>Instituição:</strong> IFSP</p>
-        <p><a href="{}">Voltar ao início</a></p>
-    '''.format(url_for('home'))
+    '''
+    return base_html.format(
+        home=url_for('home'),
+        conteudo=conteudo
+    )
 
 @app.route('/contextorequisicao')
 def contexto():
     navegador = request.headers.get('User-Agent')
     ip_remoto = request.remote_addr
-    host = request.host  # ou request.host_url para incluir http(s)
+    host = request.host  
 
-    return '''
-        <h1>Avaliação contínua: Aula 030</h1>
-        <p><strong>Seu navegador é:</strong> {}</p>
-        <p><strong>O IP do computador remoto é:</strong> {}</p>
-        <p><strong>O host da aplicação é:</strong> {}</p>
-        <p><a href="{}">Voltar ao início</a></p>
-    '''.format(
-        navegador,
-        ip_remoto,
-        host,
-        url_for('home')
+    conteudo = f'''
+        <h1>Contexto da Requisição</h1>
+        <p><strong>Seu navegador é:</strong> {navegador}</p>
+        <p><strong>O IP do computador remoto é:</strong> {ip_remoto}</p>
+        <p><strong>O host da aplicação é:</strong> {host}</p>
+    '''
+    return base_html.format(
+        home=url_for('home'),
+        conteudo=conteudo
     )
+
+if __name__ == '__main__':
+    app.run(debug=True)
