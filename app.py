@@ -1,11 +1,10 @@
-from flask import Flask, url_for, request
-from datetime import datetime
+from flask import Flask, request, url_for
 
 app = Flask(__name__)
 
 base_html = '''
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Avaliação contínua: Aula 040</title>
@@ -26,36 +25,13 @@ base_html = '''
 <div class="container mt-4">
   {conteudo}
 </div>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 '''
 
-def tempo_relativo(segundos: int) -> str:
-    """Transforma segundos em uma frase tipo 'a few seconds ago'."""
-    if segundos < 5:
-        return "That was a few seconds ago."
-    elif segundos < 60:
-        return f"That was {segundos} seconds ago."
-    elif segundos < 120:
-        return "That was 1 minute ago."
-    else:
-        minutos = segundos // 60
-        return f"That was {minutos} minutes ago."
-
 @app.route('/')
 def home():
-    agora = datetime.now()
-    texto_data = agora.strftime("%B %d, %Y %I:%M %p")
-    # calcula diferença em segundos entre agora e agora (vai ser zero ao carregar)
-    segundos = (datetime.now() - agora).seconds
-    conteudo = f'''
-      <h1>Dados da última atualização:</h1>
-      <hr>
-      <p>The local date and time is {texto_data}.</p>
-      <p>{tempo_relativo(segundos)}</p>
-    '''
+    conteudo = "<h1>Home</h1>"
     return base_html.format(
         home=url_for('home'),
         ident=url_for('identificacao'),
@@ -63,14 +39,19 @@ def home():
         conteudo=conteudo
     )
 
-@app.route('/identificacao')
+@app.route('/identificacao', methods=["GET", "POST"])
 def identificacao():
-    conteudo = '''
-      <h1>Olá, Amanda Maciel!</h1>
-      <hr>
-      <p>Prontuário: PT3032591</p>
-      <p>Instituição: IFSP</p>
-    '''
+    nome = request.form.get("nome")
+    if nome:
+        conteudo = f"<h1>Hello, {nome}!</h1>"
+    else:
+        conteudo = '''
+          <h1>Hello, what is your name?</h1>
+          <form method="POST" class="form-inline mt-3">
+            <input type="text" class="form-control mr-2" name="nome" placeholder="Enter your name">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        '''
     return base_html.format(
         home=url_for('home'),
         ident=url_for('identificacao'),
@@ -80,41 +61,7 @@ def identificacao():
 
 @app.route('/contextorequisicao')
 def contexto():
-    navegador = request.headers.get('User-Agent')
-    ip_remoto = request.remote_addr
-    host = request.host
-    conteudo = f'''
-      <h1>Olá, Amanda Maciel!</h1>
-      <hr>
-      <p>Seu navegador é: {navegador}</p>
-      <p>O IP do computador remoto é: {ip_remoto}</p>
-      <p>O host da aplicação é: {host}</p>
-    '''
-    return base_html.format(
-        home=url_for('home'),
-        ident=url_for('identificacao'),
-        contexto=url_for('contexto'),
-        conteudo=conteudo
-    )
-
-@app.route('/user/<nome>/<prontuario>/IFSP')
-def user_dinamico(nome, prontuario):
-    conteudo = f'''
-      <h1>Olá, {nome}!</h1>
-      <hr>
-      <p>Prontuário: {prontuario}</p>
-      <p>Instituição: IFSP</p>
-    '''
-    return base_html.format(
-        home=url_for('home'),
-        ident=url_for('identificacao'),
-        contexto=url_for('contexto'),
-        conteudo=conteudo
-    )
-
-@app.route('/rotainexistente')
-def rota_inexistente():
-    conteudo = '<h1>Not Found</h1>'
+    conteudo = "<h1>Contexto da requisição</h1>"
     return base_html.format(
         home=url_for('home'),
         ident=url_for('identificacao'),
