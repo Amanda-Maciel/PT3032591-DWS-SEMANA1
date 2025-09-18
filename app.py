@@ -1,22 +1,22 @@
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, url_for
 from datetime import datetime
 import socket
 
 app = Flask(__name__)
 
-# Modelo de base HTML
+# HTML base
 base_html = '''
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Flasky</title>
+  <title>Avaliação contínua: Aula 050.B</title>
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="{home}">Flasky</a>
+  <a class="navbar-brand" href="{home}"><strong>Avaliação contínua:</strong> Aula 050.B</a>
   <div class="collapse navbar-collapse">
     <ul class="navbar-nav ml-auto">
       <li class="nav-item"><a class="nav-link" href="{home}">Home</a></li>
@@ -31,7 +31,7 @@ base_html = '''
 </html>
 '''
 
-# Dicionário de dados do usuário
+# Dados do usuário
 dados_usuario = {
     "nome": "Estranho",
     "sobrenome": "",
@@ -41,7 +41,6 @@ dados_usuario = {
     "host": "None"
 }
 
-# ---------- ROTAS ----------
 @app.route("/", methods=["GET", "POST"])
 def home():
     global dados_usuario
@@ -54,18 +53,39 @@ def home():
         dados_usuario["ip"] = request.remote_addr or "None"
         dados_usuario["host"] = socket.gethostname() or "None"
 
+    now = datetime.now().strftime("%B %d, %Y %I:%M %p")
+
     conteudo = f"""
-    <h1>Cadastro de Usuário</h1>
-    <form method="POST" class="mt-3">
-        <input type="text" name="nome" class="form-control mb-2" placeholder="Nome">
-        <input type="text" name="sobrenome" class="form-control mb-2" placeholder="Sobrenome">
-        <input type="text" name="instituicao" class="form-control mb-2" placeholder="Instituição">
-        <input type="text" name="disciplina" class="form-control mb-2" placeholder="Disciplina">
-        <button type="submit" class="btn btn-primary">Salvar</button>
-    </form>
+    <h2>Olá, {dados_usuario['nome']}!</h2>
+    <p>A sua Instituição de ensino é {dados_usuario['instituicao']}</p>
+    <p>Está cursando a disciplina de {dados_usuario['disciplina']}</p>
+    <p>O IP do computador remoto é: {dados_usuario['ip']}</p>
+    <p>O host da aplicação é: {dados_usuario['host']}</p>
     <hr>
-    <h4>Dados salvos:</h4>
-    <pre>{dados_usuario}</pre>
+    <form method="POST">
+      <div class="form-group">
+        <label>Informe o seu nome</label>
+        <input type="text" class="form-control" name="nome">
+      </div>
+      <div class="form-group">
+        <label>Informe o seu sobrenome:</label>
+        <input type="text" class="form-control" name="sobrenome">
+      </div>
+      <div class="form-group">
+        <label>Informe a sua Instituição de ensino:</label>
+        <input type="text" class="form-control" name="instituicao">
+      </div>
+      <div class="form-group">
+        <label>Informe a sua disciplina:</label>
+        <select class="form-control" name="disciplina">
+          <option value="DSWA5">DSWA5</option>
+          <option value="Outro">Outro</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-light">Submit</button>
+    </form>
+    <p class="mt-3 text-muted">The local date and time is {now}.</p>
+    <p class="text-muted">That was a few seconds ago.</p>
     """
 
     return base_html.format(
@@ -76,10 +96,6 @@ def home():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "POST":
-        usuario = request.form.get("usuario") or "desconhecido"
-        return redirect(url_for("acesso", usuario=usuario))
-
     now = datetime.now().strftime("%B %d, %Y %I:%M %p")
     conteudo = f"""
     <h1>Login</h1>
@@ -88,22 +104,6 @@ def login():
         <button type="submit" class="btn btn-success">Entrar</button>
     </form>
     <p class="mt-3 text-muted">Data e hora atual: {now}</p>
-    """
-
-    return base_html.format(
-        home=url_for("home"),
-        login=url_for("login"),
-        conteudo=conteudo
-    )
-
-@app.route("/acesso")
-def acesso():
-    usuario = request.args.get("usuario", "desconhecido")
-    now = datetime.now().strftime("%B %d, %Y %I:%M %p")
-    conteudo = f"""
-    <h1>Acesso liberado</h1>
-    <p>Bem-vindo, <strong>{usuario}</strong>!</p>
-    <p>Data e hora: {now}</p>
     """
     return base_html.format(
         home=url_for("home"),
