@@ -1,4 +1,4 @@
-from flask import Flask, request, url_for
+from flask import Flask, request, url_for, redirect
 from datetime import datetime
 import socket
 
@@ -38,7 +38,8 @@ dados_usuario = {
     "instituicao": "None",
     "disciplina": "",
     "ip": "None",
-    "host": "None"
+    "host": "None",
+    "usuario": ""
 }
 
 @app.route("/", methods=["GET", "POST"])
@@ -97,14 +98,43 @@ def home():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if request.method == "POST":
+        usuario = request.form.get("usuario")
+        senha = request.form.get("senha")
+        dados_usuario["usuario"] = usuario
+        return redirect(url_for("loginResponse"))
+
     now = datetime.now().strftime("%B %d, %Y %I:%M %p")
     conteudo = f"""
-    <h1>Login</h1>
-    <form method="POST" class="form-inline mt-3">
-        <input type="text" class="form-control mr-2" name="usuario" placeholder="Usuário">
-        <button type="submit" class="btn btn-success">Entrar</button>
-    </form>
-    <p class="mt-3 text-muted">Data e hora atual: {now}</p>
+    <div class="card p-4" style="max-width:400px; margin:auto;">
+      <h3>Login:</h3>
+      <form method="POST">
+        <div class="form-group">
+          <input type="text" class="form-control" name="usuario" placeholder="Usuário ou e-mail">
+        </div>
+        <div class="form-group">
+          <input type="password" class="form-control" name="senha" placeholder="Informe a sua senha">
+        </div>
+        <button type="submit" class="btn btn-primary">Enviar</button>
+      </form>
+    </div>
+    <p class="mt-3 text-muted">The local date and time is {now}.</p>
+    <p class="text-muted">That was a few seconds ago.</p>
+    """
+    return base_html.format(
+        home=url_for("home"),
+        login=url_for("login"),
+        conteudo=conteudo
+    )
+
+@app.route("/loginResponse")
+def loginResponse():
+    now = datetime.now().strftime("%B %d, %Y %I:%M %p")
+    conteudo = f"""
+    <h3>Dados do acesso</h3>
+    <p>Você está acessando o sistema por meio do usuário <strong>{dados_usuario['usuario']}</strong></p>
+    <p class="mt-3 text-muted">The local date and time is {now}.</p>
+    <p class="text-muted">That was a few seconds ago.</p>
     """
     return base_html.format(
         home=url_for("home"),
