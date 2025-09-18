@@ -79,7 +79,8 @@ def home():
         <label>Informe a sua disciplina:</label>
         <select class="form-control" name="disciplina">
           <option value="DSWA5">DSWA5</option>
-          <option value="Outro">Outro</option>
+          <option value="DSWA4">DSWA4</option>
+          <option value="Gestão De Projetos">Gestão de Projetos</option>
         </select>
       </div>
       <button type="submit" class="btn btn-light">Submit</button>
