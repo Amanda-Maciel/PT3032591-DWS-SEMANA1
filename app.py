@@ -1,63 +1,50 @@
-from flask import Flask, request, url_for
+from flask import Flask, render_template, request, redirect, url_for
+from datetime import datetime
+import socket
 
 app = Flask(__name__)
 
-base_html = '''
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Flasky</title>
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="{flasky}">Flasky</a>
-  <div class="collapse navbar-collapse">
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item"><a class="nav-link" href="{home}">Home</a></li>
-    </ul>
-  </div>
-</nav>
-<div class="container mt-4">
-  {conteudo}
-</div>
-</body>
-</html>
-'''
 
-def render_form(nome=None):
-    """Função para reaproveitar o mesmo formulário em Home e Flasky"""
-    if nome:
-        return f"<h1>Hello, {nome}!</h1>"
-    return '''
-      <h1>Hello, what is your name?</h1>
-      <form method="POST" class="form-inline mt-3">
-        <input type="text" class="form-control mr-2" name="nome" placeholder="Enter your name">
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
-    '''
+dados_usuario = {
+    "nome": "Estranho",
+    "sobrenome": "",
+    "instituicao": "None",
+    "disciplina": "",
+    "ip": "None",
+    "host": "None"
+}
 
-@app.route('/', methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
 def home():
-    nome = request.form.get("nome")
-    conteudo = render_form(nome)
-    return base_html.format(
-        home=url_for('home'),
-        flasky=url_for('flasky'),
-        conteudo=conteudo
-    )
+    global dados_usuario
 
-@app.route('/flasky', methods=["GET", "POST"])
-def flasky():
-    nome = request.form.get("nome")
-    conteudo = render_form(nome)
-    return base_html.format(
-        home=url_for('home'),
-        flasky=url_for('flasky'),
-        conteudo=conteudo
-    )
+    if request.method == "POST":
+        dados_usuario["nome"] = request.form.get("nome") or "Estranho"
+        dados_usuario["sobrenome"] = request.form.get("sobrenome") or ""
+        dados_usuario["instituicao"] = request.form.get("instituicao") or "None"
+        dados_usuario["disciplina"] = request.form.get("disciplina") or ""
+        dados_usuario["ip"] = request.remote_addr or "None"
+        dados_usuario["host"] = socket.gethostname() or "None"
 
-if __name__ == '__main__':
+    return render_template("index.html", dados=dados_usuario)
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        usuario = request.form.get("usuario")
+        return redirect(url_for("acesso", usuario=usuario))
+
+    now = datetime.now().strftime("%B %d, %Y %I:%M %p")
+    return render_template("login.html", now=now)
+
+
+@app.route("/acesso")
+def acesso():
+    usuario = request.args.get("usuario", "desconhecido")
+    now = datetime.now().strftime("%B %d, %Y %I:%M %p")
+    return render_template("acesso.html", usuario=usuario, now=now)
+
+
+if __name__ == "__main__":
     app.run(debug=True)
